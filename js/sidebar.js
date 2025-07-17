@@ -6,8 +6,12 @@ class SidebarManager {
     }
 
     init() {
-        this.bindEvents();
-        this.setupAccessibility();
+        try {
+            this.bindEvents();
+            this.setupAccessibility();
+        } catch (error) {
+            console.error('Sidebar initialization failed:', error);
+        }
     }
 
     bindEvents() {
@@ -78,6 +82,7 @@ class SidebarManager {
         if (sidebar) {
             sidebar.setAttribute('role', 'navigation');
             sidebar.setAttribute('aria-label', 'Quick Access Menu');
+            sidebar.setAttribute('aria-hidden', 'true');
         }
 
         // Set up focus trap when sidebar is open
@@ -88,16 +93,17 @@ class SidebarManager {
         const sidebar = document.getElementById('quick-access-sidebar');
         if (!sidebar) return;
 
-        // Recalculate focusable elements each time
-        const focusableElements = sidebar.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length === 0) return;
-        const firstFocusable = focusableElements[0];
-        const lastFocusable = focusableElements[focusableElements.length - 1];
-
         sidebar.addEventListener('keydown', (e) => {
             if (!this.isOpen) return;
+
+            // Recalculate focusable elements each time
+            const focusableElements = sidebar.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusableElements.length === 0) return;
+            
+            const firstFocusable = focusableElements[0];
+            const lastFocusable = focusableElements[focusableElements.length - 1];
 
             if (e.key === 'Tab') {
                 if (e.shiftKey) {
@@ -178,6 +184,9 @@ class SidebarManager {
 
             // Update ARIA attributes
             sidebar.setAttribute('aria-hidden', 'true');
+
+            // Close all submenus
+            this.closeAllSubmenus();
         }
     }
 
@@ -218,14 +227,43 @@ class SidebarManager {
 
         expandedSubmenus.forEach(submenu => {
             submenu.classList.remove('expanded');
+            submenu.setAttribute('aria-hidden', 'true');
         });
     }
 
     handleMenuClick(page) {
-        console.log('Navigating to page:', page);
-        
-        // Handle home navigation
-        if (page === 'home') {
+        try {
+            console.log('Navigating to page:', page);
+            
+            // Handle home navigation
+            if (page === 'home') {
+                this.loadHomePage();
+            } else {
+                // Load other pages
+                if (window.pageManager) {
+                    window.pageManager.loadPage(page);
+                } else {
+                    // Fallback: trigger page load event
+                    document.dispatchEvent(new CustomEvent('pageLoad', {
+                        detail: { page: page }
+                    }));
+                }
+            }
+            
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth < 1024) {
+                this.closeSidebar();
+            }
+            
+            // Update active menu item
+            this.updateActiveMenuItem(page);
+        } catch (error) {
+            console.error('Menu click handling error:', error);
+        }
+    }
+
+    loadHomePage() {
+        try {
             // Show default home content
             const pageContent = document.getElementById('page-content');
             if (pageContent) {
@@ -310,133 +348,36 @@ class SidebarManager {
             
             // Update page title
             document.title = 'Mengo Senior School - Excellence in Education Since 1895';
-        } else {
-            // Load other pages
-            if (window.pageManager) {
-                window.pageManager.loadPage(page);
-            } else {
-                // Fallback: trigger page load event
-                document.dispatchEvent(new CustomEvent('pageLoad', {
-                    detail: { page: page }
-                }));
-            }
-        }
-        
-        // Close sidebar on mobile after navigation
-        if (window.innerWidth < 1024) {
-            this.closeSidebar();
-        }
-        
-        // Update active menu item
-        this.updateActiveMenuItem(page);
-    }
-
-    loadHomePage() {
-        // Show default home content
-        const pageContent = document.getElementById('page-content');
-        if (pageContent) {
-            pageContent.innerHTML = `
-                <section class="home-content">
-                    <div class="container">
-                        <div class="content-grid">
-                            <div class="main-content-area">
-                                <article class="welcome-section">
-                                    <h2>Welcome to Mengo Senior School</h2>
-                                    <p class="lead">For over 130 years, Mengo Senior School has stood as a pillar of educational excellence in Uganda, nurturing young minds and shaping future leaders.</p>
-                                    
-                                    <div class="highlights-grid">
-                                        <div class="highlight-card">
-                                            <div class="highlight-icon">
-                                                <i data-lucide="award"></i>
-                                            </div>
-                                            <h3>Academic Excellence</h3>
-                                            <p>Consistently ranked among Uganda's top secondary schools with outstanding national examination results.</p>
-                                        </div>
-                                        
-                                        <div class="highlight-card">
-                                            <div class="highlight-icon">
-                                                <i data-lucide="users"></i>
-                                            </div>
-                                            <h3>Holistic Development</h3>
-                                            <p>Comprehensive programs in academics, sports, arts, and leadership development.</p>
-                                        </div>
-                                        
-                                        <div class="highlight-card">
-                                            <div class="highlight-icon">
-                                                <i data-lucide="globe"></i>
-                                            </div>
-                                            <h3>Global Network</h3>
-                                            <p>Alumni network spanning across continents, creating opportunities for current students.</p>
-                                        </div>
-                                    </div>
-                                </article>
-                            </div>
-                            
-                            <aside class="sidebar-content">
-                                <div class="news-widget">
-                                    <h3>Latest News</h3>
-                                    <div class="news-item">
-                                        <time>Dec 15, 2024</time>
-                                        <h4>UNEB Results Excellence</h4>
-                                        <p>Mengo SS achieves 98% pass rate in national examinations.</p>
-                                    </div>
-                                    <div class="news-item">
-                                        <time>Dec 10, 2024</time>
-                                        <h4>New Science Laboratory</h4>
-                                        <p>State-of-the-art physics lab officially opened.</p>
-                                    </div>
-                                    <div class="news-item">
-                                        <time>Dec 5, 2024</time>
-                                        <h4>Alumni Achievement</h4>
-                                        <p>Former student appointed as Minister of Education.</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="quick-links-widget">
-                                    <h3>Quick Links</h3>
-                                    <ul>
-                                        <li><a href="#admissions">Admissions</a></li>
-                                        <li><a href="#calendar">Academic Calendar</a></li>
-                                        <li><a href="#fees">Fee Structure</a></li>
-                                        <li><a href="#transport">Transport</a></li>
-                                        <li><a href="#uniform">School Uniform</a></li>
-                                    </ul>
-                                </div>
-                            </aside>
-                        </div>
-                    </div>
-                </section>
-            `;
             
-            // Initialize Lucide icons
-            if (window.lucide) {
-                lucide.createIcons();
+            // Clear URL hash
+            if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', window.location.pathname);
             }
+        } catch (error) {
+            console.error('Home page loading error:', error);
         }
-        
-        // Update page title
-        document.title = 'Mengo Senior School - Excellence in Education Since 1895';
-        
-        // Clear URL hash
-        window.history.pushState({}, '', window.location.pathname);
     }
 
     updateActiveMenuItem(page) {
-        // Remove active class from all menu items
-        const menuItems = document.querySelectorAll('.menu-link');
-        menuItems.forEach(item => {
-            item.classList.remove('active');
-        });
+        try {
+            // Remove active class from all menu items
+            const menuItems = document.querySelectorAll('.menu-link');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
 
-        // Add active class to current menu item
-        const activeItem = document.querySelector(`.menu-link[data-page="${page}"]`);
-        if (activeItem) {
-            activeItem.classList.add('active');
+            // Add active class to current menu item
+            const activeItem = document.querySelector(`.menu-link[data-page="${page}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        } catch (error) {
+            console.error('Active menu item update error:', error);
         }
     }
 
     // Public methods
-    isOpen() {
+    getIsOpen() {
         return this.isOpen;
     }
 
@@ -451,21 +392,26 @@ class SidebarManager {
 
 // Initialize sidebar manager when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    window.sidebarManager = new SidebarManager();
-    // Accessibility: Add role and tabindex to expandable menu items
-    document.querySelectorAll('.menu-link.expandable').forEach(item => {
-        item.setAttribute('role', 'button');
-        item.setAttribute('tabindex', '0');
-        item.setAttribute('aria-expanded', 'false');
-        const submenuId = item.getAttribute('data-submenu');
-        if (submenuId) {
-            item.setAttribute('aria-controls', submenuId + '-submenu');
-            const submenu = document.getElementById(submenuId + '-submenu');
-            if (submenu) {
-                submenu.setAttribute('aria-hidden', 'true');
+    try {
+        window.sidebarManager = new SidebarManager();
+        
+        // Accessibility: Add role and tabindex to expandable menu items
+        document.querySelectorAll('.menu-link.expandable').forEach(item => {
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            item.setAttribute('aria-expanded', 'false');
+            const submenuId = item.getAttribute('data-submenu');
+            if (submenuId) {
+                item.setAttribute('aria-controls', submenuId + '-submenu');
+                const submenu = document.getElementById(submenuId + '-submenu');
+                if (submenu) {
+                    submenu.setAttribute('aria-hidden', 'true');
+                }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Failed to initialize sidebar manager:', error);
+    }
 });
 
 // Export for use in other modules

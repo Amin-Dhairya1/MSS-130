@@ -39,7 +39,7 @@ class SecurityManager {
         const errors = [];
         const requirements = this.passwordRequirements;
 
-        if (password.length < requirements.minLength) {
+        if (!password || password.length < requirements.minLength) {
             errors.push(`Password must be at least ${requirements.minLength} characters long`);
         }
 
@@ -77,8 +77,11 @@ class SecurityManager {
     }
 
     calculatePasswordStrength(password) {
+        if (!password) {
+            return { level: 'Very Weak', color: '#dc2626', percentage: 0 };
+        }
+
         let score = 0;
-        let feedback = [];
 
         // Length scoring
         if (password.length >= 8) score += 1;
@@ -110,6 +113,8 @@ class SecurityManager {
     }
 
     isCommonPassword(password) {
+        if (!password) return false;
+        
         const commonPasswords = [
             'password', '123456', '123456789', 'qwerty', 'abc123',
             'password123', 'admin', 'letmein', 'welcome', 'monkey',
@@ -119,12 +124,18 @@ class SecurityManager {
     }
 
     hasSequentialChars(password) {
+        if (!password) return false;
+        
         const sequences = ['123', 'abc', 'qwe', 'asd', 'zxc'];
         return sequences.some(seq => password.toLowerCase().includes(seq));
     }
 
     // Password Hashing and Verification
     async hashPassword(password, providedSalt = null) {
+        if (!password) {
+            throw new Error('Password is required');
+        }
+
         // Generate salt if not provided
         const salt = providedSalt || crypto.getRandomValues(new Uint8Array(16));
         
@@ -144,6 +155,10 @@ class SecurityManager {
 
     async verifyPassword(password, storedHash, storedSalt) {
         try {
+            if (!password || !storedHash || !storedSalt) {
+                return false;
+            }
+
             // Convert stored salt from hex string back to Uint8Array
             const saltArray = new Uint8Array(storedSalt.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
             
@@ -205,6 +220,10 @@ class SecurityManager {
 
     // Rate Limiting
     checkRateLimit(identifier, type = 'login') {
+        if (!identifier) {
+            return { allowed: false, retryAfter: 60 };
+        }
+
         const now = Date.now();
         const limits = this.rateLimiting;
         
@@ -247,6 +266,8 @@ class SecurityManager {
     }
 
     recordFailedAttempt(identifier) {
+        if (!identifier) return;
+
         const now = Date.now();
         const attempts = this.rateLimiting.loginAttempts.get(identifier) || { count: 0, lastAttempt: now, lockedUntil: 0 };
         
@@ -263,6 +284,8 @@ class SecurityManager {
 
     // Encryption and Hashing
     async hashData(data) {
+        if (!data) return '';
+        
         const encoder = new TextEncoder();
         const dataBuffer = encoder.encode(data);
         const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
@@ -278,11 +301,14 @@ class SecurityManager {
         document.addEventListener('DOMContentLoaded', () => {
             const forms = document.querySelectorAll('form');
             forms.forEach(form => {
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = 'csrf_token';
-                csrfInput.value = this.csrfToken;
-                form.appendChild(csrfInput);
+                // Check if CSRF token already exists
+                if (!form.querySelector('input[name="csrf_token"]')) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = this.csrfToken;
+                    form.appendChild(csrfInput);
+                }
             });
         });
     }
@@ -307,7 +333,7 @@ class SecurityManager {
         };
 
         // Monitor for session hijacking
-        setInterval(() => {
+        this.sessionCheckInterval = setInterval(() => {
             this.validateSession();
         }, 60000); // Check every minute
 
@@ -316,23 +342,28 @@ class SecurityManager {
     }
 
     generateFingerprint() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillText('Mengo School Security Check', 2, 2);
-        
-        const fingerprint = {
-            canvas: canvas.toDataURL(),
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            platform: navigator.platform,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            screen: `${screen.width}x${screen.height}`,
-            colorDepth: screen.colorDepth
-        };
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Mengo School Security Check', 2, 2);
+            
+            const fingerprint = {
+                canvas: canvas.toDataURL(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                screen: `${screen.width}x${screen.height}`,
+                colorDepth: screen.colorDepth
+            };
 
-        return btoa(JSON.stringify(fingerprint));
+            return btoa(JSON.stringify(fingerprint));
+        } catch (error) {
+            console.warn('Fingerprint generation failed:', error);
+            return 'fallback-fingerprint-' + Date.now();
+        }
     }
 
     getClientIP() {
@@ -341,6 +372,8 @@ class SecurityManager {
     }
 
     validateSession() {
+        if (!this.sessionData) return false;
+
         const now = Date.now();
         const sessionAge = now - this.sessionData.startTime;
         const inactiveTime = now - this.sessionData.lastActivity;
@@ -368,7 +401,9 @@ class SecurityManager {
     }
 
     updateActivity() {
-        this.sessionData.lastActivity = Date.now();
+        if (this.sessionData) {
+            this.sessionData.lastActivity = Date.now();
+        }
     }
 
     setupInactivityTimer() {
@@ -392,6 +427,11 @@ class SecurityManager {
     }
 
     terminateSession(reason) {
+        // Clear intervals
+        if (this.sessionCheckInterval) {
+            clearInterval(this.sessionCheckInterval);
+        }
+
         // Clear session data only (keep registered users)
         localStorage.removeItem('mengo_user');
         localStorage.removeItem('session_token');
@@ -415,8 +455,6 @@ class SecurityManager {
         meta.httpEquiv = 'Content-Security-Policy';
         meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';";
         document.head.appendChild(meta);
-
-        // Note: Clickjacking prevention removed to avoid SecurityError in WebContainer environment
     }
 
     initializeEncryption() {
@@ -426,16 +464,24 @@ class SecurityManager {
     }
 
     async generateEncryptionKey() {
-        this.encryptionKey = await crypto.subtle.generateKey(
-            { name: 'AES-GCM', length: 256 },
-            false,
-            ['encrypt', 'decrypt']
-        );
+        try {
+            this.encryptionKey = await crypto.subtle.generateKey(
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        } catch (error) {
+            console.warn('Encryption key generation failed:', error);
+        }
     }
 
     async encryptSensitiveData(data) {
         if (!this.encryptionKey) {
             await this.generateEncryptionKey();
+        }
+
+        if (!this.encryptionKey) {
+            throw new Error('Encryption not available');
         }
 
         const encoder = new TextEncoder();
@@ -466,6 +512,10 @@ class SecurityManager {
     }
 
     validateEmail(email) {
+        if (!email || typeof email !== 'string') {
+            return { isValid: false, sanitized: '' };
+        }
+
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const isValid = emailRegex.test(email);
         
@@ -490,16 +540,21 @@ class SecurityManager {
             sessionId: this.sessionData?.fingerprint?.substring(0, 8) || 'unknown'
         };
 
-        // Store in local storage for now (in production, send to server)
-        const logs = JSON.parse(localStorage.getItem('security_logs') || '[]');
-        logs.push(logEntry);
-        
-        // Keep only last 100 entries
-        if (logs.length > 100) {
-            logs.splice(0, logs.length - 100);
+        try {
+            // Store in local storage for now (in production, send to server)
+            const logs = JSON.parse(localStorage.getItem('security_logs') || '[]');
+            logs.push(logEntry);
+            
+            // Keep only last 100 entries
+            if (logs.length > 100) {
+                logs.splice(0, logs.length - 100);
+            }
+            
+            localStorage.setItem('security_logs', JSON.stringify(logs));
+        } catch (error) {
+            console.warn('Failed to log security event:', error);
         }
-        
-        localStorage.setItem('security_logs', JSON.stringify(logs));
+
         console.warn('Security Event:', logEntry);
     }
 

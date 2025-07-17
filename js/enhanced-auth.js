@@ -98,6 +98,19 @@ class EnhancedAuthSystem {
                 e.target.value = this.security.sanitizeInput(e.target.value);
             });
         });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !authModal.classList.contains('hidden')) {
+                this.hideAuthModal();
+            }
+        });
+
+        // Close modal on overlay click
+        const modalOverlay = authModal?.querySelector('.modal-overlay');
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', () => this.hideAuthModal());
+        }
     }
 
     setupSecurityMonitoring() {
@@ -158,6 +171,13 @@ class EnhancedAuthSystem {
         if (modal) {
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            
+            // Focus management
+            const firstInput = modal.querySelector('input');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus(), 100);
+            }
+            
             this.security.logSecurityEvent('auth_modal_shown');
         }
     }
@@ -167,6 +187,12 @@ class EnhancedAuthSystem {
         if (modal) {
             modal.classList.add('hidden');
             document.body.style.overflow = '';
+            
+            // Clear any demo code display
+            const demoCodeDisplay = document.getElementById('demo-code-display');
+            if (demoCodeDisplay) {
+                demoCodeDisplay.remove();
+            }
         }
     }
 
@@ -174,6 +200,13 @@ class EnhancedAuthSystem {
         document.getElementById('login-form').classList.remove('active');
         document.getElementById('register-form').classList.add('active');
         document.getElementById('verification-form').classList.remove('active');
+        
+        // Clear form
+        const form = document.getElementById('register-form-element');
+        if (form) {
+            form.reset();
+        }
+        
         this.security.logSecurityEvent('register_form_shown');
     }
 
@@ -181,6 +214,13 @@ class EnhancedAuthSystem {
         document.getElementById('register-form').classList.remove('active');
         document.getElementById('login-form').classList.add('active');
         document.getElementById('verification-form').classList.remove('active');
+        
+        // Clear form
+        const form = document.getElementById('login-form-element');
+        if (form) {
+            form.reset();
+        }
+        
         this.security.logSecurityEvent('login_form_shown');
     }
 
@@ -194,6 +234,13 @@ class EnhancedAuthSystem {
             emailSpan.textContent = email;
         }
 
+        // Clear verification input
+        const codeInput = document.getElementById('verification-code');
+        if (codeInput) {
+            codeInput.value = '';
+            codeInput.focus();
+        }
+
         // Show the demo code in the UI
         this.showDemoCodeInUI();
         
@@ -201,40 +248,43 @@ class EnhancedAuthSystem {
     }
 
     showDemoCodeInUI() {
-        // Create or update demo code display
-        let demoCodeDisplay = document.getElementById('demo-code-display');
-        if (!demoCodeDisplay) {
-            demoCodeDisplay = document.createElement('div');
-            demoCodeDisplay.id = 'demo-code-display';
-            demoCodeDisplay.style.cssText = `
-                background: #f0f9ff;
-                border: 2px solid #0ea5e9;
-                border-radius: 8px;
-                padding: 1rem;
-                margin: 1rem 0;
-                text-align: center;
-                font-family: monospace;
-            `;
-            
-            const verificationForm = document.getElementById('verification-form');
-            const codeInput = document.getElementById('verification-code');
-            if (verificationForm && codeInput) {
-                verificationForm.insertBefore(demoCodeDisplay, codeInput.parentElement);
-            }
+        // Remove existing demo code display
+        const existingDisplay = document.getElementById('demo-code-display');
+        if (existingDisplay) {
+            existingDisplay.remove();
         }
 
-        if (this.currentDemoCode) {
-            demoCodeDisplay.innerHTML = `
-                <div style="color: #0369a1; font-weight: bold; margin-bottom: 0.5rem;">
-                    🔐 Demo Mode - Your Verification Code:
-                </div>
-                <div style="font-size: 1.5rem; font-weight: bold; color: #1e40af; letter-spacing: 0.2em;">
-                    ${this.currentDemoCode}
-                </div>
-                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
-                    Copy this code and paste it in the field below
-                </div>
-            `;
+        if (!this.currentDemoCode) return;
+
+        // Create demo code display
+        const demoCodeDisplay = document.createElement('div');
+        demoCodeDisplay.id = 'demo-code-display';
+        demoCodeDisplay.style.cssText = `
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-family: monospace;
+        `;
+        
+        demoCodeDisplay.innerHTML = `
+            <div style="color: #0369a1; font-weight: bold; margin-bottom: 0.5rem;">
+                🔐 Demo Mode - Your Verification Code:
+            </div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #1e40af; letter-spacing: 0.2em;">
+                ${this.currentDemoCode}
+            </div>
+            <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                Copy this code and paste it in the field below
+            </div>
+        `;
+
+        const verificationForm = document.getElementById('verification-form');
+        const codeInput = document.getElementById('verification-code');
+        if (verificationForm && codeInput) {
+            verificationForm.insertBefore(demoCodeDisplay, codeInput.parentElement);
         }
     }
 
@@ -243,17 +293,19 @@ class EnhancedAuthSystem {
         const input = document.getElementById(targetId);
         const icon = toggle.querySelector('i');
 
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.setAttribute('data-lucide', 'eye-off');
-        } else {
-            input.type = 'password';
-            icon.setAttribute('data-lucide', 'eye');
-        }
+        if (input && icon) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
 
-        // Reinitialize Lucide icons
-        if (window.lucide) {
-            lucide.createIcons();
+            // Reinitialize Lucide icons
+            if (window.lucide) {
+                lucide.createIcons();
+            }
         }
     }
 
@@ -289,26 +341,22 @@ class EnhancedAuthSystem {
     }
 
     validatePasswordMatch() {
-        const password = document.getElementById('register-password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
+        const password = document.getElementById('register-password')?.value || '';
+        const confirmPassword = document.getElementById('confirm-password')?.value || '';
         const matchIndicator = document.getElementById('password-match');
+
+        if (!matchIndicator) return;
 
         if (confirmPassword.length > 0) {
             if (password === confirmPassword) {
-                if (matchIndicator) {
-                    matchIndicator.textContent = '✓ Passwords match';
-                    matchIndicator.style.color = '#059669';
-                }
+                matchIndicator.textContent = '✓ Passwords match';
+                matchIndicator.style.color = '#059669';
             } else {
-                if (matchIndicator) {
-                    matchIndicator.textContent = '✗ Passwords do not match';
-                    matchIndicator.style.color = '#dc2626';
-                }
+                matchIndicator.textContent = '✗ Passwords do not match';
+                matchIndicator.style.color = '#dc2626';
             }
         } else {
-            if (matchIndicator) {
-                matchIndicator.textContent = '';
-            }
+            matchIndicator.textContent = '';
         }
     }
 
@@ -317,6 +365,12 @@ class EnhancedAuthSystem {
         const formData = new FormData(e.target);
         const email = formData.get('email');
         const password = formData.get('password');
+
+        // Input validation
+        if (!email || !password) {
+            this.showNotification('Please fill in all fields.', 'error');
+            return;
+        }
 
         // Validate CSRF token
         const csrfToken = formData.get('csrf_token');
@@ -406,6 +460,12 @@ class EnhancedAuthSystem {
         const lastName = formData.get('lastName');
         const role = formData.get('role');
 
+        // Input validation
+        if (!email || !password || !confirmPassword || !firstName || !lastName || !role) {
+            this.showNotification('Please fill in all required fields.', 'error');
+            return;
+        }
+
         // Validate CSRF token
         const csrfToken = formData.get('csrf_token');
         if (!this.security.validateCSRFToken(csrfToken)) {
@@ -494,7 +554,7 @@ class EnhancedAuthSystem {
             return;
         }
 
-        if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+        if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
             this.showNotification('Please enter a valid 6-digit code.', 'error');
             return;
         }
@@ -701,6 +761,12 @@ class EnhancedAuthSystem {
     }
 
     showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => {
+            this.removeNotification(notification);
+        });
+
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -764,12 +830,14 @@ class EnhancedAuthSystem {
     }
 
     removeNotification(notification) {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
+        if (notification && notification.parentNode) {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
     }
 }
 
