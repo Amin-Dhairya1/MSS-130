@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mengo Senior School - Estd 1895</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="school-crest">
+                        <div class="crest-shield">
+                            <div class="crest-inner">MSS</div>
+                        </div>
+                    </div>
+                    <div class="school-identity">
+                        <h1 class="school-name">Mengo Senior School</h1>
+                        <p class="school-motto">• Fearing God • Respect of perons and property • Integrity </p>
+                        <p class="school-year">Estd. 1895</p>
+                    </div>
+                </div>
+                
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="#about" class="nav-link">About</a></li>
+                        <li><a href="#academics" class="nav-link">Academics</a></li>
+                        <li><a href="#admissions" class="nav-link">Admissions</a></li>
+                        <li><a href="#news" class="nav-link">News</a></li>
+                        <li><a href="#contact" class="nav-link">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <div class="header-actions">
+                    <button id="quick-access-btn" class="quick-access-btn" aria-label="Quick Access Menu">
+                        <i data-lucide="menu"></i>
+                        <span>Quick Access</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Access Sidebar -->
+    <div id="quick-access-sidebar" class="quick-access-sidebar">
+        <div class="sidebar-header">
+            <h2>Quick Access</h2>
+            <button id="close-sidebar" class="close-sidebar" aria-label="Close sidebar">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="sidebar-menu">
+                <li class="menu-item home-item">
+                    <a href="#home" class="menu-link" data-page="home">
+                        <i data-lucide="home"></i>
+                        <span>Back to Home</span>
+                        <p class="menu-description">Return to the main homepage</p>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#administration" class="menu-link" data-page="administration">
+                        <i data-lucide="users"></i>
+                        <span>Administration</span>
+                        <p class="menu-description">Teacher & staff portal for student management</p>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <div class="menu-link expandable" data-submenu="elearning">
+                        <i data-lucide="book-open"></i>
+                        <span>E-Learning</span>
+                        <i data-lucide="chevron-right" class="expand-icon"></i>
+                    </div>
+                    <ul class="submenu" id="elearning-submenu">
+                        <li><a href="#elibrary" data-page="elibrary">E-Library</a></li>
+                        <li><a href="#physics-sim" data-page="physics-sim">Physics Simulations</a></li>
+                    </ul>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#ewriters" class="menu-link" data-page="ewriters">
+                        <i data-lucide="pen-tool"></i>
+                        <span>E-Writers</span>
+                        <p class="menu-description">Student publication platform</p>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#parents" class="menu-link" data-page="parents">
+                        <i data-lucide="heart"></i>
+                        <span>Parents Platform</span>
+                        <p class="menu-description">Monitor student progress & connect</p>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#archive" class="menu-link" data-page="archive">
+                        <i data-lucide="archive"></i>
+                        <span>Archive</span>
+                        <p class="menu-description">Historical records & documents</p>
+                    </a>
+                </li>
+                
+                <li class="menu-item featured">
+                    <a href="#mosa" class="menu-link" data-page="mosa">
+                        <i data-lucide="graduation-cap"></i>
+                        <span>MOSA</span>
+                        <p class="menu-description">Mengo Old Students' Association</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="main-content">
+        <!-- Hero Slideshow -->
+        <section class="hero-slideshow">
+            <div class="slideshow-container">
+                <div class="slide active" data-slide="1">
+                    <div class="slide-background" style="background-image: url('https://images.pexels.com/photos/207692/pexels-photo-207692.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')"></div>
+                    <div class="slide-content">
+                        <div class="container">
+                            <h2 class="slide-title">Welcome to Mengo Senior School</h2>
+                            <p class="slide-description">Nurturing excellence in education for over 130 years. Discover our rich heritage and commitment to academic excellence.</p>
+                            <a href="about.html" class="slide-cta">Learn More About Us</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide" data-slide="2">
+                    <div class="slide-background" style="background-image: url('https://images.pexels.com/photos/159844/book-address-book-learning-learn-159844.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')"></div>
+                    <div class="slide-content">
+                        <div class="container">
+                            <h2 class="slide-title">Our Rich History</h2>
+                            <p class="slide-description">Founded in 1895, Mengo Senior School has been a beacon of educational excellence in Uganda, shaping leaders for generations.</p>
+                            <a href="#history" class="slide-cta">Explore Our Heritage</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide" data-slide="3">
+                    <div class="slide-background" style="background-image: url('https://images.pexels.com/photos/1181534/pexels-photo-1181534.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')"></div>
+                    <div class="slide-content">
+                        <div class="container">
+                            <h2 class="slide-title">Dedicated Faculty</h2>
+                            <p class="slide-description">Our experienced and passionate educators are committed to nurturing each student's potential and fostering academic excellence.</p>
+                            <a href="#faculty" class="slide-cta">Meet Our Staff</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide" data-slide="4">
+                    <div class="slide-background" style="background-image: url('https://images.pexels.com/photos/1205651/pexels-photo-1205651.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')"></div>
+                    <div class="slide-content">
+                        <div class="container">
+                            <h2 class="slide-title">Exceptional Students</h2>
+                            <p class="slide-description">Our students consistently excel in academics, sports, and leadership, representing the future of Uganda and beyond.</p>
+                            <a href="#students" class="slide-cta">Student Life</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide" data-slide="5">
+                    <div class="slide-background" style="background-image: url('https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')"></div>
+                    <div class="slide-content">
+                        <div class="container">
+                            <h2 class="slide-title">Alumni Network</h2>
+                            <p class="slide-description">Join our distinguished alumni community through MOSA - connecting generations of Mengo leaders worldwide.</p>
+                            <a href="#mosa" class="slide-cta">Join MOSA</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slideshow Controls -->
+            <div class="slideshow-controls">
+                <button class="slide-nav prev" id="prev-slide" aria-label="Previous slide">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+                <div class="slide-indicators">
+                    <button class="indicator active" data-slide="1"></button>
+                    <button class="indicator" data-slide="2"></button>
+                    <button class="indicator" data-slide="3"></button>
+                    <button class="indicator" data-slide="4"></button>
+                    <button class="indicator" data-slide="5"></button>
+                </div>
+                <button class="slide-nav next" id="next-slide" aria-label="Next slide">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Page Content Container -->
+        <div id="page-content" class="page-content">
+            <!-- Default Home Content -->
+            <section class="home-content">
+                <div class="container">
+                    <div class="content-grid">
+                        <div class="main-content-area">
+                            <article class="welcome-section">
+                                <h2>Welcome to Mengo Senior School</h2>
+                                <p class="lead">For over 130 years, Mengo Senior School has stood as a pillar of educational excellence in Uganda, nurturing young minds and shaping future leaders.</p>
+                                
+                                <div class="highlights-grid">
+                                    <div class="highlight-card">
+                                        <div class="highlight-icon">
+                                            <i data-lucide="award"></i>
+                                        </div>
+                                        <h3>Academic Excellence</h3>
+                                        <p>Consistently ranked among Uganda's top secondary schools with outstanding national examination results.</p>
+                                    </div>
+                                    
+                                    <div class="highlight-card">
+                                        <div class="highlight-icon">
+                                            <i data-lucide="users"></i>
+                                        </div>
+                                        <h3>Holistic Development</h3>
+                                        <p>Comprehensive programs in academics, sports, arts, and leadership development.</p>
+                                    </div>
+                                    
+                                    <div class="highlight-card">
+                                        <div class="highlight-icon">
+                                            <i data-lucide="globe"></i>
+                                        </div>
+                                        <h3>Global Network</h3>
+                                        <p>Alumni network spanning across continents, creating opportunities for current students.</p>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        
+                        <aside class="sidebar-content">
+                            <div class="news-widget">
+                                <h3>Latest News</h3>
+                                <div class="news-item">
+                                    <time>Dec 15, 2024</time>
+                                    <h4>UNEB Results Excellence</h4>
+                                    <p>Mengo SS achieves 98% pass rate in national examinations.</p>
+                                </div>
+                                <div class="news-item">
+                                    <time>Dec 10, 2024</time>
+                                    <h4>New Science Laboratory</h4>
+                                    <p>State-of-the-art physics lab officially opened.</p>
+                                </div>
+                                <div class="news-item">
+                                    <time>Dec 5, 2024</time>
+                                    <h4>Alumni Achievement</h4>
+                                    <p>Former student appointed as Minister of Education.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="quick-links-widget">
+                                <h3>Quick Links</h3>
+                                <ul>
+                                    <li><a href="#admissions">Admissions</a></li>
+                                    <li><a href="#calendar">Academic Calendar</a></li>
+                                    <li><a href="#fees">Fee Structure</a></li>
+                                    <li><a href="#transport">Transport</a></li>
+                                    <li><a href="#uniform">School Uniform</a></li>
+                                </ul>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="auth-modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Access Portal</h2>
+                <button id="close-auth-modal" class="close-modal" aria-label="Close modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form active">
+                    <h3>Sign In</h3>
+                    <form id="login-form-element">
+                        <div class="form-group">
+                            <label for="login-email">Email or Index Number</label>
+                            <input type="text" id="login-email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="login-password" name="password" required>
+                                <button type="button" class="password-toggle" data-target="login-password">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </form>
+                    
+                    <p class="form-footer">
+                        Don't have an account? 
+                        <button id="show-register" class="link-btn">Register here</button>
+                    </p>
+                </div>
+                
+                <!-- Registration Form -->
+                <div id="register-form" class="auth-form">
+                    <h3>Create Account</h3>
+                    <form id="register-form-element">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name</label>
+                                <input type="text" id="first-name" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name</label>
+                                <input type="text" id="last-name" name="lastName" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="register-email">Email Address</label>
+                            <input type="email" id="register-email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="index-number">Index Number (Alumni only)</label>
+                            <input type="text" id="index-number" name="indexNumber" placeholder="Optional - for MOSA access">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="user-role">Role</label>
+                            <select id="user-role" name="role" required>
+                                <option value="">Select your role</option>
+                                <option value="student">Current Student</option>
+                                <option value="parent">Parent</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="alumni">Alumni</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="register-password" name="password" required>
+                                <button type="button" class="password-toggle" data-target="register-password">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill"></div>
+                                </div>
+                                <div class="strength-text">Password strength: Very Weak</div>
+                            </div>
+                            <div id="password-errors" class="password-errors"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" name="confirmPassword" required>
+                            <div id="password-match" class="password-match"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </form>
+                    
+                    <p class="form-footer">
+                        Already have an account? 
+                        <button id="show-login" class="link-btn">Sign in here</button>
+                    </p>
+                </div>
+                
+                <!-- Verification Form -->
+                <div id="verification-form" class="auth-form">
+                    <h3>Email Verification</h3>
+                    <p>We've sent a verification code to <strong id="verification-email"></strong></p>
+                    
+                    <form id="verification-form-element">
+                        <div class="form-group">
+                            <label for="verification-code">Verification Code</label>
+                            <input type="text" id="verification-code" name="code" maxlength="6" pattern="[0-9]{6}" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Verify Email</button>
+                    </form>
+                    
+                    <p class="form-footer">
+                        Didn't receive the code? 
+                        <button id="resend-code" class="link-btn">Resend</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Mengo Senior School</h3>
+                    <p>Excellence in Education Since 1895</p>
+                    <div class="contact-info">
+                        <p><i data-lucide="map-pin"></i> Mengo Hill, Kampala, Uganda</p>
+                        <p><i data-lucide="phone"></i> +256 414 270 251</p>
+                        <p><i data-lucide="mail"></i> info@mengoseniorschool.ac.ug</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#admissions">Admissions</a></li>
+                        <li><a href="#academics">Academics</a></li>
+                        <li><a href="#news">News & Events</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="#parents">Parents</a></li>
+                        <li><a href="#mosa">Alumni (MOSA)</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+                        <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+                        <a href="#" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Mengo Senior School. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                    <a href="#accessibility">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/security.js"></script>
+    <script src="js/enhanced-auth.js"></script>
+    <script src="js/slideshow.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/pages.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
