@@ -246,6 +246,9 @@ class MengoApp {
             const searchInput = document.querySelector('input[type="text"][placeholder*="search" i], input[type="search"]');
             if (searchInput) {
                 searchInput.focus();
+            } else {
+                // No search input found, silently return without error
+                console.log('No search input found to focus');
             }
         } catch (error) {
             console.error('Search focus error:', error);
