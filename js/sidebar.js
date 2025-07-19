@@ -470,15 +470,14 @@ class SidebarManager {
                 this.loadHomePage();
             } else {
                 // Load other pages
-                if (window.pageManager) {
-                    window.pageManager.loadPage(page);
-                } else if (window.mengoApp && window.mengoApp.getComponent('pageManager')) {
-                    window.mengoApp.getComponent('pageManager').loadPage(page);
+                const pageManager = window.pageManager || 
+                                  (window.mengoApp && window.mengoApp.getComponent('pageManager'));
+                
+                if (pageManager) {
+                    pageManager.loadPage(page);
                 } else {
-                    // Fallback: trigger page load event
-                    document.dispatchEvent(new CustomEvent('pageLoad', {
-                        detail: { page: page }
-                    }));
+                    console.warn('PageManager not available, cannot load page:', page);
+                    this.showPageNotAvailable(page);
                 }
             }
             
@@ -491,6 +490,25 @@ class SidebarManager {
             
         } catch (error) {
             console.error('Menu click handling error:', error);
+        }
+    }
+
+    showPageNotAvailable(page) {
+        const pageContent = document.getElementById('page-content');
+        if (pageContent) {
+            pageContent.innerHTML = `
+                <section class="error-content">
+                    <div class="container">
+                        <div class="error-message">
+                            <h2>Page Not Available</h2>
+                            <p>The ${page} page is currently not available. Please try again later.</p>
+                            <button onclick="window.location.reload()" class="btn btn-primary">
+                                Refresh Page
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `;
         }
     }
 

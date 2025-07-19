@@ -37,24 +37,25 @@ class MengoApp {
 
     async initializeComponents() {
         try {
-            // Initialize slideshow manager
-            if (window.SlideshowManager) {
-                this.components.slideshow = new SlideshowManager();
+            // Initialize security manager
+            if (window.SecurityManager) {
+                this.components.security = new SecurityManager();
             }
 
-            // Initialize sidebar manager
+            // Initialize page manager (needs to be before sidebar)
+            if (window.PageManager) {
+                this.components.pageManager = new PageManager();
+                window.pageManager = this.components.pageManager;
+            }
+
+            // Initialize sidebar manager (depends on pageManager)
             if (window.SidebarManager) {
                 this.components.sidebar = new SidebarManager();
             }
 
-            // Initialize page manager
-            if (window.PageManager) {
-                this.components.pageManager = new PageManager();
-            }
-
-            // Initialize security manager
-            if (window.SecurityManager) {
-                this.components.security = new SecurityManager();
+            // Initialize slideshow manager
+            if (window.SlideshowManager) {
+                this.components.slideshow = new SlideshowManager();
             }
         } catch (error) {
             console.error('Component initialization failed:', error);
@@ -124,17 +125,21 @@ class MengoApp {
     handleNavigation(target) {
         try {
             // Check if it's a page navigation
-            const pages = ['administration', 'elibrary', 'physics-sim', 'ewriters', 'parents', 'archive', 'mosa'];
+            const pages = ['home', 'administration', 'elibrary', 'physics-sim', 'ewriters', 'parents', 'archive', 'mosa'];
             
             if (pages.includes(target)) {
                 if (this.components.pageManager) {
                     this.components.pageManager.loadPage(target);
+                } else {
+                    console.warn('PageManager not available for navigation to:', target);
                 }
             } else {
                 // Handle anchor navigation
                 const element = document.getElementById(target);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    console.warn('Navigation target not found:', target);
                 }
             }
         } catch (error) {

@@ -12,6 +12,13 @@ class SlideshowManager {
 
     init() {
         try {
+            // Wait for DOM elements to be available
+            if (!this.checkRequiredElements()) {
+                console.warn('Slideshow elements not found, retrying...');
+                setTimeout(() => this.init(), 100);
+                return;
+            }
+            
             this.bindEvents();
             this.startAutoPlay();
             this.preloadImages();
@@ -19,6 +26,14 @@ class SlideshowManager {
         } catch (error) {
             console.error('Slideshow initialization failed:', error);
         }
+    }
+
+    checkRequiredElements() {
+        const slideshowContainer = document.querySelector('.hero-slideshow');
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        
+        return slideshowContainer && slides.length > 0 && indicators.length > 0;
     }
 
     bindEvents() {

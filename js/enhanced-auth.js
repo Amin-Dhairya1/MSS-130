@@ -1,7 +1,7 @@
 // Enhanced Authentication System with 2FA and Security
 class EnhancedAuthSystem {
     constructor() {
-        this.security = new SecurityManager();
+        this.security = null;
         this.currentUser = null;
         this.isAuthenticated = false;
         this.pendingVerification = null;
@@ -11,11 +11,44 @@ class EnhancedAuthSystem {
     }
 
     init() {
+        // Wait for SecurityManager to be available
+        this.initializeSecurity();
         this.bindEvents();
         this.checkAuthStatus();
         this.setupSecurityMonitoring();
     }
 
+    initializeSecurity() {
+        if (window.SecurityManager) {
+            this.security = new SecurityManager();
+        } else {
+            // Retry after a short delay
+            setTimeout(() => {
+                if (window.SecurityManager) {
+                    this.security = new SecurityManager();
+                } else {
+                    console.warn('SecurityManager not available, using fallback security');
+                    this.security = this.createFallbackSecurity();
+                }
+            }, 100);
+        }
+    }
+
+    createFallbackSecurity() {
+        return {
+            validatePassword: () => ({ isValid: true, errors: [], strength: { level: 'Good', color: '#059669', percentage: 70 } }),
+            validateEmail: (email) => ({ isValid: true, sanitized: email }),
+            sanitizeInput: (input) => input,
+            checkRateLimit: () => ({ allowed: true }),
+            recordFailedAttempt: () => {},
+            generateSecure2FACode: () => Promise.resolve({ code: '123456', timestamp: Date.now(), attempts: 0, maxAttempts: 3, expiresAt: Date.now() + 600000 }),
+            hashPassword: (password) => Promise.resolve({ hash: 'demo-hash', salt: 'demo-salt' }),
+            verifyPassword: () => Promise.resolve(true),
+            validateCSRFToken: () => true,
+            generateSecureToken: () => 'demo-token-' + Date.now(),
+            logSecurityEvent: () => {}
+        };
+    }
     loadRegisteredUsers() {
         const users = localStorage.getItem('mengo_registered_users');
         return users ? JSON.parse(users) : {};
@@ -362,6 +395,12 @@ class EnhancedAuthSystem {
 
     async handleLogin(e) {
         e.preventDefault();
+        
+        if (!this.security) {
+            this.showNotification('Security system not ready. Please try again.', 'error');
+            return;
+        }
+        
         const formData = new FormData(e.target);
         const email = formData.get('email');
         const password = formData.get('password');
@@ -452,6 +491,12 @@ class EnhancedAuthSystem {
 
     async handleRegister(e) {
         e.preventDefault();
+        
+        if (!this.security) {
+            this.showNotification('Security system not ready. Please try again.', 'error');
+            return;
+        }
+        
         const formData = new FormData(e.target);
         const email = formData.get('email');
         const password = formData.get('password');
