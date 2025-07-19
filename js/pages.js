@@ -149,6 +149,9 @@ class PageManager {
             case 'administration':
                 this.initializeAdministration();
                 break;
+            case 'mosa':
+                this.initializeMOSANavigation();
+                break;
             // Add more page-specific initializations as needed
         }
     }
@@ -183,6 +186,57 @@ class PageManager {
                 this.switchAdminTab(tabName);
             });
         });
+    }
+    
+    initializeMOSANavigation() {
+        // MOSA section navigation
+        const navItems = document.querySelectorAll('.mosa-nav-item');
+        const sections = document.querySelectorAll('.mosa-section');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetSection = item.getAttribute('data-section');
+                
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Update active section
+                sections.forEach(section => section.classList.remove('active'));
+                const targetElement = document.getElementById(`mosa-${targetSection}`);
+                if (targetElement) {
+                    targetElement.classList.add('active');
+                }
+            });
+        });
+        
+        // Achievement category filtering
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const achievementCards = document.querySelectorAll('.achievement-card');
+        
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.getAttribute('data-category');
+                
+                // Update active category button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Filter achievement cards
+                achievementCards.forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Initialize Lucide icons
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     }
 
     showLoadingState(pageName) {
